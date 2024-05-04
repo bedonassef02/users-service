@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:13.1
+    container_name: users-postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: bedo
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: users-db
+
+    volumes:
+      - users-postgres-db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    container_name: users-service-db-connection-adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  users-service:
+    build: .
+    container_name: 'users-service'
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_USER: bedo
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: users-db
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+
+volumes:
+  users-postgres-db:
